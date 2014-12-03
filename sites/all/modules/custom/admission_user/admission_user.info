@@ -1,0 +1,4 @@
+name = Admission User
+description = handling user registration process and display 
+core = 7.x
+package = Admission

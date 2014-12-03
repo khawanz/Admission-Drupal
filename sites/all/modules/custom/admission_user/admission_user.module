@@ -1,0 +1,521 @@
+<?php
+
+/* 
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+function admission_user_permission(){
+    return array(
+        'access tambah user' => array(
+            'title' => 'Access Tambah User',
+            'description' => 'Access untuk menambah user'
+        ),
+        'access admission home' => array(
+            'title' => 'Akses halaman home'
+        ),
+        'access admission ubah-nilai' => array(
+            'title' => 'Akses halaman Ubah Nilai'
+        ),
+         'access admission print-jadwal' => array(
+            'title' => 'Akses halaman Print Jadwal'
+        ),
+        'access admission setting-ujian' => array(
+            'title' => 'Akses halaman setting-ujian'
+        ),
+        'access admission konfirmasi-pembayaran' => array(
+            'title' => 'Akses halaman Konfirmasi konfirmasi Pembayaran'
+        ),     
+        'access admission list-konfirmasi' => array(
+            'title' => 'Akses halaman list konfirmasi pembayaran'
+        ),
+        'access admission list-registrasi' => array(
+            'title' => 'Akses halaman list registrasi'
+        ),
+        'access admission export-list-konfirmasi' => array(
+            'title' => 'Akses Meng-export daftar konfirmasi pembayaran ke file excel'
+        ),    
+        'access admission kelulusan' => array(
+            'title' => 'Akses halaman pengaturan kelulusan calon mahasiswa'
+        ),   
+        'access admission survey' => array(
+            'title' => 'Akses halaman survey'
+        ),
+        'access admission rekap-peserta' => array(
+            'title' => 'Akses halaman Rekap Peserta'
+        ),
+        'access admission setting-prodi' => array(
+            'title' => 'Akses halaman setting program studi berdasarkan jurusan sekolah'
+        ),
+    );
+}
+
+
+function admission_user_menu(){
+    $menu['home'] = array(
+        'page callback' => 'admission_page_home',
+        //'page arguments' => array('upt_survey_form'),
+        'access arguments' => array('access admission home'),
+        'type' => MENU_CALLBACK,
+         'file' => 'admission_page_home.inc',
+        'file path' => drupal_get_path('module', 'admission_user'),
+    );
+    
+    $menu['setting-prodi'] = array(
+        'title' => t('Prodi Setting'),
+         'description' => t('Konfigurasi program studi'),
+         'page callback' => 'drupal_get_form',
+        'page arguments' => array('prodi_setting_form'),
+        'access arguments' => array('access admission setting-prodi'),
+        'menu_name' => 'main-menu',
+         'file' => 'prodi_setting.inc',
+         'file path' => drupal_get_path('module', 'admission_user').'/forms',
+    );
+    
+//    $menu['ubah-nilai'] = array(
+//        'title' => t('Ubah Nilai'),
+//        'description' => t('Ubah nilai tiap semester'),
+//        'page callback' => 'admission_page_ubah_nilai',
+//        //'page arguments' => array('upt_survey_form'),
+//        'access arguments' => array('access admission ubah-nilai'),
+//        'menu_name' => 'menu-menu-ub-matriculant',
+//    );
+    
+//    $menu['setting-ujian'] = array(
+//        'title' => t('Setting Ujian'),
+//        'description' => t('Input informasi ujian'),
+//        'page callback' => 'drupal_get_form',
+//        'page arguments' => array('setting_ujian_form'),
+//        'file' => 'setting_ujian.inc',
+//        'file path' => drupal_get_path('module', 'admission_user').'/forms',
+//        'access arguments' => array('access admission setting-ujian'),
+//         'menu_name' => 'main-menu',
+//    );
+    
+     $menu['konfirmasi-pembayaran'] = array(
+        'title' => t('Konfirmasi Pembayaran'),
+        'description' => t('Konfirmasi pembayaran'),
+        'page callback' => 'node_add',
+        'page arguments' => array('pembayaran'),
+        'file' => 'node.pages.inc',
+        'file path' => drupal_get_path('module', 'node'),
+        'access arguments' => array('access admission konfirmasi-pembayaran'),
+         'menu_name' => 'menu-menu-ub-matriculant',
+         'weight' => -2,
+    );
+     
+     $menu['list-konfirmasi'] = array(
+         'title' => t('USM Fee'),
+         'description' => t('Daftar Konfirmasi Pembayaran'),
+        'page callback' => 'views_page',
+        'page arguments' => array('list_konfirmasi_pembayaran', 'page'),	
+        'file' => 'views.module',
+        'file path' => drupal_get_path('module', 'views'),
+        'weight' => -5,
+        'access arguments' => array('access admission list-konfirmasi'),
+        'menu_name' => 'main-menu',
+     );
+    
+//     $menu['pembayaran/list-konfirmasi'] = array(
+//         'title' => t('Daftar Konfirmasi'),
+//          'access arguments' => array('access admission list-konfirmasi'),
+//          'type' => MENU_DEFAULT_LOCAL_TASK,
+//          'weight' => 0,
+//     );
+      
+       $menu['list-registrasi'] = array(
+          'title' => t('Daftar Registrasi'),
+        //'description' => t('Konfirmasi pembayaran'),
+        'page callback' => 'views_page',
+        'page arguments' => array('vregistration', 'page'),	
+        'file' => 'views.module',
+        'file path' => drupal_get_path('module', 'views'),
+        'weight' => -6,
+        'access arguments' => array('access admission list-registrasi'),
+        'menu_name' => 'main-menu',
+     );
+       
+  $menu['export-list-konfirmasi'] = array(
+        'page callback' => 'admission_konfirmasi_export',
+        //'page arguments' => array('upt_survey_form'),
+        'access arguments' => array('access admission export-list-konfirmasi'),        
+        'file' => 'admission_konfirmasi_export.inc',
+        'file path' => drupal_get_path('module', 'admission_user'),
+        'type' => MENU_CALLBACK,
+    );
+  
+  $menu['kelulusan'] = array(
+        'title' => t('Kelulusan'),
+        'description' => t('Menentukan kelulusan calon mahasiswa'),
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('kelulusan_form'),
+        'file' => 'kelulusan_form.inc',
+        'file path' => drupal_get_path('module', 'admission_user').'/forms',
+        'access arguments' => array('access admission kelulusan'),
+         'menu_name' => 'main-menu',
+    );
+  
+   $menu['survey'] = array(
+        'title' => t('Survey'),
+        'description' => t('Survey aplikasi'),
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('survey_form'),
+        'file' => 'survey_form.inc',
+        'file path' => drupal_get_path('module', 'admission_user').'/forms',
+        'access arguments' => array('access admission survey'),
+         'menu_name' => 'menu-menu-ub-matriculant',
+       'weight' => 101,
+    );
+   
+   $menu['rekap-peserta'] = array(
+        'page callback' => 'daftar_rekap_peserta',
+        //'page arguments' => array('upt_survey_form'),
+        'access arguments' => array('access admission rekap-peserta'),        
+        'file' => 'rekap_peserta.inc',
+        'file path' => drupal_get_path('module', 'admission_user').'/forms',
+        'type' => MENU_CALLBACK,
+    );
+  
+    return $menu;
+}
+
+function admission_user_theme(){
+    return array(
+        'kelulusan_form' => array(
+            'render element' => 'form',
+        ),
+        'survey_form' => array(
+            'render element' => 'form',
+        )
+    );
+}
+
+function admission_user_page_alter(&$page){
+    global $user;
+//    $profile = profile2_load_by_user($user->uid);
+    //give warning if user dont have valid email
+    if($user->uid){
+       $default_mail = $user->name.'@admission.bakrie.ub';
+        if($user->mail == $default_mail){
+            $link = l('here',"user/$user->uid/edit");
+            drupal_set_message(t("Your email $default_mail is <b>INVALID</b>. Please update your valid email! Update $link" ), 'warning');
+        } 
+    }
+    
+}
+
+function admission_user_form_alter(&$form,&$form_state,$form_id){
+    global $user;
+
+    //remove filter for admin page
+    if($form_id == 'user_filter_form' && in_array('managers', $user->roles)){
+        unset($form['filters']);
+    }
+    
+    //remove all users except matriculant for admin page
+    if($form_id == 'user_admin_account' && in_array('managers', $user->roles)){
+        foreach(element_children($form['accounts']['#options']) as $userid){
+            if (strpos($form['accounts']['#options'][$userid]['roles'],'matriculants') != true){
+                unset($form['accounts']['#options'][$userid]);
+            }
+        }
+        
+    }
+    
+    //Disable username textfield if user isn't 'root'
+    if($form_id == 'user_register_form' && !user_access('access tambah user')){      
+       
+        //Username
+        $form['account']['name']['#attributes']['readonly'] = TRUE;
+        $form['account']['name']['#description'] = t('Otomatis email Anda.');
+        //$form['account']['name']['#required'] = 0;
+        //$form['account']['name']['#value'] = '-';
+        
+        //Email
+        $form['account']['mail']['#title'] = t('Email');
+        $form['account']['mail']['#description'] = t('Ketikkan email yang valid. Semua email dari sistem akan'
+                . ' dikirim ke email ini. Pastikan email anda benar');
+
+        //$form['account']['mail']['#required'] = 0;
+        //$form['account']['mail']['#value'] = 'USR@domain.com';
+        
+        //it's for username value. Get it from user email.
+        drupal_add_js(drupal_get_path('module', 'admission_user').'/script.js');
+        
+        unset($form['#validate'][0]);   //we dont need validation of username and email
+        
+        //custom validation for right email
+        //$form['#validate'][] = 'admission_user_email_validate';
+    }
+
+    if($form_id == 'registration_node_form'){
+        
+        if(in_array('matriculants', $user->roles)){  
+       
+            $profile = profile2_load_by_user($user->uid);
+            $jurusan = $profile['data_sekolah']->field_sekolah_jurusan['und'][0]['value'];
+            $prodi_setting = variable_get('prodi_'.$jurusan);
+            
+            //check prodi setting (in localhost/setting-prodi). If default, let it go.
+            if(!variable_get('prodi_default')){
+                foreach($prodi_setting as $key => $value){
+                    if(empty($value)){                   
+                        unset($form['field_reg_departement1']['und']['#options'][$key]);
+    //                    unset($form['field_reg_departement2']['und']['#options'][$key]);
+    //                    unset($form['field_reg_departement3']['und']['#options'][$key]);
+                    }             
+                }
+            }
+                    
+            //fill candidate field with username login and user id
+            $form['field_reg_candidate']['und'][0]['target_id']['#default_value'] = $user->name .' ('.$user->uid.')';           
+            //hide candidate field   
+            $form['field_reg_candidate']['und']['#prefix'] = '<div id="field-reg-candidate-add-more-wrapper" style="display: none">';
+            
+            //fill the schedule option based on user choice
+            $form['field_reg_schedule']['und']['#default_value'] = arg(3);             
+
+            $program = node_load_multiple(array(),array('title' => 'S1'));
+
+            //fill the program option -> till now just S1
+            $form['field_reg_program']['und']['#default_value'] = key($program);
+            
+            $schedule_node = node_load(arg(3));
+            $jalur = strtolower($schedule_node->field_schedule_kategori['und'][0]['value']);
+             //redirect soon after user submit
+            if($jalur == 'jalur usm'){
+                $form['actions']['submit']['#submit'][] = 'registration_usm_redirect_submit';
+            }
+            else{
+                $form['actions']['submit']['#submit'][] = 'registration_notusm_redirect_submit';
+            }
+            
+        }
+                                                
+    }       
+    
+    if($form_id == 'user_login'){
+    
+         //GIVE WARNING! if anonymous user want to apply test then he must login/register first
+        if(!$user->uid){
+             drupal_add_js(
+                     'jQuery(document).ready(function () { '
+                     . 'alert("Anda harus login atau daftar terlebih dahulu!"); '
+                     . '});', 
+                     'inline');
+            //drupal_set_message('Anda harus <b>login</b> atau <b>daftar</b> terlebih dahulu!', 'error');
+        }
+    }  
+}
+
+function registration_usm_redirect_submit($form,&$form_state){
+  $form_state['redirect'] = 'jadwal';
+}
+
+function registration_notusm_redirect_submit($form,&$form_state){
+  $form_state['redirect'] = 'home';
+}
+
+//CANCEL!
+//function admission_user_email_validate($form, &$form_state){
+//    if (!empty($form_state['values']['mail']) && 
+//            $error = user_validate_mail($form_state['values']['mail'])) {
+//      form_set_error('mail', $error);
+//    }
+//}
+
+
+function admission_user_user_login(&$edit, $account){
+    global $user;
+    
+    if(in_array('matriculants',$user->roles)){
+        $profile = profile2_load_by_user($user->uid);
+        $jurusan = strtolower($profile['data_sekolah']->field_sekolah_jurusan['und'][0]['value']);
+        if($jurusan == 'lain'){
+            $jurusan = 'smk';
+        }
+
+        //save this $jurusan to session variable
+        $_SESSION['jurusan'] = $jurusan;
+    }
+    
+}
+
+//CANCEL!
+//after user create account, generate username automatically and generate email if user didnt fill email field.
+//function admission_user_user_presave(&$edit, $account, $category){
+//    
+//     if($account->is_new && !user_access('access tambah user')){
+//        $uid = db_query('SELECT MAX(uid) FROM {users}')->fetchField();
+//        $next_uid = $uid + 1;
+//        $account->name = 'USR' . str_pad($next_uid, 5, '0',STR_PAD_LEFT);
+//        $account->mail = !empty($account->mail)? $account->mail:$account->name.'@admission.bakrie.ub';
+//        $account->init = $account->mail;
+//   
+//        $edit['name'] = $account->name;
+//        $edit['mail'] = $account->mail;
+//        $edit['init'] = $account->init;
+//       
+//        drupal_set_message(t("Your <b>username is <u>$account->name</u> </b>." ), 'warning');
+//    }   
+//}
+
+
+//function admission_page_ubah_nilai(){
+//    global $user;
+//    $profile = profile2_load_by_user($user->uid);dpm($profile,'profile');
+//    $jurusan = strtolower($profile['data_sekolah']->field_sekolah_jurusan['und'][0]['value']);
+//    drupal_goto("user/$user->uid/edit/nilai_{$jurusan}");
+//}
+
+function admission_user_node_presave($node){
+
+//generate registration number in format: [yy][gelombang][number]
+    if($node->type == 'registration' && $node->is_new){
+        $tahun = date('y');      
+        
+        $schedule_node = node_load($node->field_reg_schedule['und'][0]['target_id']);
+        $gelombang = $schedule_node->field_schedule_gelombang['und'][0]['value'];
+        
+        $count = db_query("SELECT count(nid) FROM _node WHERE type='registration'")->fetchField();
+        $count++;
+        if(!isset($count)){
+            $count = 0;
+        }                   
+        $count = str_pad($count, 3, '0', STR_PAD_LEFT);
+                
+        $node->field_reg_no['und'][0]['value'] = $tahun.''.$gelombang.''.$count;
+        $uid = $node->field_reg_candidate['und'][0]['target_id'];
+        $user_candidate = user_load($uid);
+        $node->title = $node->field_reg_no['und'][0]['value'].' - '.$user_candidate->name;
+    }
+}
+
+//
+//function admission_user_node_insert($node){
+//    
+//    //update registration node (it has to be 'paid') after user submit confirmation fee
+//    if($node->type == 'pembayaran'){
+//        $noreg = $node->field_bayar_noreg['und'][0]['target_id'];
+//        
+//        $reg_node = node_load($noreg);
+//        $reg_node->field_reg_fee['und'][0]['value'] = 'Paid';
+//        node_save($reg_node);
+//    }
+//}
+
+function admission_user_node_validate($node, $form, &$form_state){
+    global $user;
+
+    //agar jadwal ujian masuk tidak bentrok. Cek ketika daftar test.
+    if($node->type == 'registration'){
+        $query = new EntityFieldQuery();
+        $query->entityCondition('entity_type', 'node')
+                ->entityCondition('bundle', 'registration')
+                ->propertyCondition('status', 1)          
+                ->fieldCondition('field_reg_candidate', 'target_id', $user->uid , '=');
+        $result = $query->execute();
+
+        if($result){
+            foreach(element_children($result['node']) as $key){
+                $reg_node = node_load($key);
+
+                $schedule_node1 = node_load($node->field_reg_schedule['und'][0]['target_id']);
+                $schedule_node2 = node_load($reg_node->field_reg_schedule['und'][0]['target_id']);
+
+                $time_node1 = $schedule_node1->field_schedule_waktu['und'][0]['value'];
+                $time_node2 = $schedule_node1->field_schedule_waktu['und'][0]['value2'];
+
+                $time_regnode1 = $schedule_node2->field_schedule_waktu['und'][0]['value'];
+                $time_regnode2 = $schedule_node2->field_schedule_waktu['und'][0]['value2'];
+
+                if($time_regnode1 >= $time_node1 AND $time_regnode1 <= $time_node2
+                        OR $time_regnode2 >= $time_node1 AND $time_regnode2 <= $time_node2){
+                    form_set_error('field_reg_waktu', t('Gagal! Ada jadwal ujian yang bentrok. Cari jadwal ujian yang lain.'));
+                }
+            }
+        }
+        
+    }
+
+    //agar konfirmasi pembayaran sesuai dengan registrasi yg dibayarkan
+    if($node->type == 'pembayaran'){
+        $query = new EntityFieldQuery();
+        $query->entityCondition('entity_type', 'node')
+                ->entityCondition('bundle', 'registration')
+                ->propertyCondition('status', 1) 
+                 ->propertyCondition('nid', $node->field_bayar_noreg['und'][0]['target_id'])
+                ->fieldCondition('field_reg_candidate', 'target_id', $user->uid , '=');
+        $result = $query->execute();
+        
+        if(!isset($result['node'])){
+            form_set_error('field_bayar_noreg', t('Gagal! Anda tidak mempunyai nomor registrasi tersebut.'));
+        }
+        
+        $query2 = new EntityFieldQuery();
+        $query2->entityCondition('entity_type', 'node')
+                ->entityCondition('bundle', 'pembayaran')
+                ->propertyCondition('status', 1)                   
+                ->fieldCondition('field_bayar_noreg', 'target_id', $node->field_bayar_noreg['und'][0]['target_id'] , '=');
+        $result2 = $query2->execute();
+        
+        if(isset($result2['node'])){           
+            form_set_error('field_bayar_noreg', t('Gagal! Anda sudah melakukan konfirmasi untuk pembayaran ini.'));
+        }
+    }
+}
+
+
+function admission_user_profile2_access($op, $profile = NULL, $account = NULL){
+    
+    //meng-hide nilai selain nilai yang sesuai dengan jurusannya. 
+    //Misal:Jika user jurusan IPA maka nilai selain IPA akan di hide
+    if($op == 'edit'){
+        $jurusan_user = $_SESSION['jurusan'];
+        $jurusan_array = array('ipa','ips','bahasa','smk');
+        foreach($jurusan_array as $jurusan){
+            if($jurusan_user != $jurusan){
+                if($profile->type == "nilai_{$jurusan}"){
+                    $profile->type = NULL;
+                }
+            }
+        }
+    }
+    
+    
+    
+}
+
+//source:https://code.google.com/p/database-wilayah-indonesia/
+//code for importing kabupaten/kota from csv file
+//  $row = 1;
+//if (($handle = fopen(drupal_get_path('module','admission_user').'/kabkota-clean.csv', "r")) !== FALSE) {
+//    while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+//        
+//        if($row != 1){
+//            $query = new EntityFieldQuery();
+//           
+//            $query->entityCondition('entity_type', 'node')
+//                 ->entityCondition('bundle', 'provinsi')
+//                  ->fieldCondition('field_prov_kode','value',$data[1],'=');
+//            $result = $query->execute();
+//            $nid = key($result['node']);dpm($nid,'result');
+//
+//             $node = new stdClass();
+//             $node->type = 'kabupaten_kota';
+//             node_object_prepare($node);
+//             //$kelulusan->title = $username.' - '.$noreg.' - '.$is_lulus;
+//             $node->status = 1;
+//             $node->uid = $user->uid;
+//             $node->language = LANGUAGE_NONE;
+//             $node->field_kota_kode['und'][0]['value'] = $data[0];
+//             $node->field_kota_nama['und'][0]['value'] = $data[2];
+//             $node->field_kota_provinsi['und'][0]['target_id'] = $nid;
+//             node_submit($node);
+//             node_save($node);
+//        }
+//        
+//    }
+//    fclose($handle);
+//}

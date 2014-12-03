@@ -1,0 +1,8 @@
+<?php
+
+function ub_admission_user_install() {
+  db_update('system')
+    ->fields(array('weight' => 100))
+    ->condition('name', 'ub_admission_user', '=')
+    ->execute();
+}

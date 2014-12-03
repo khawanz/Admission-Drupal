@@ -1,0 +1,184 @@
+<?php
+
+function admission_cetak_permission(){
+    return  array(
+        'access admission cetak' => array(
+            'title' => 'Akses halaman cetak'
+        ), 
+        'access admission cetak sudah-daftar' => array(
+            'title' => 'Akses halaman cetak sudah-daftar'
+        ), 
+        'access admission cetak sudah-bayar' => array(
+            'title' => 'Akses halaman cetak sudah-daftar'
+        ), 
+        'access admission lihat hasil-test' => array(
+            'title' => 'Akses filter untuk melihat hasil test'
+        ), 
+         'access admission cetak kartu' => array(
+            'title' => 'Akses filter untuk mencetak kartu ujian'
+        ), 
+    );
+}
+
+function admission_cetak_menu(){   
+           
+      $menu['cetak'] = array(
+//         'title' => t('Cetak'),
+//         'description' => t('Cetak invoice'),
+         'page callback' => 'admission_cetak',
+        //'page arguments' => array('upt_survey_form'),
+        'access arguments' => array('access admission cetak'),
+         'type' => MENU_CALLBACK,
+         
+     );
+      
+      //for student
+      $menu['hasil-usm'] = array(
+         'title' => t('Hasil Test'),
+         'description' => t('Hasil Ujian Masuk'),
+         'page callback' => 'admission_cetak_hasil_tes',
+        //'page arguments' => array('admission_cetak_hasil_form'),
+        'access arguments' => array('access admission cetak'),
+        'menu_name' => 'menu-menu-ub-matriculant',
+         'file' => 'cetak_hasil_tes.inc',
+         'file path' => drupal_get_path('module', 'admission_cetak').'/cetak',
+         'weight' => -102,
+     );
+      
+      //for admin
+       $menu['hasil-test'] = array(
+         'title' => t('Hasil Test'),
+         'description' => t('Hasil Ujian Masuk'),
+         'page callback' => 'drupal_get_form',
+        'page arguments' => array('admission_cetak_hasil_form'),
+        'access arguments' => array('access admission lihat hasil-test'),
+        'menu_name' => 'main-menu',
+         'file' => 'cetak_hasil_tes.inc',
+         'file path' => drupal_get_path('module', 'admission_cetak').'/cetak',
+         'weight' => -102,
+     );
+      
+     $menu['cetak/invoice'] = array(
+         'title' => t('Cetak Invoice'),
+         'description' => t('Cetak invoice'),
+         'page callback' => 'admission_cetak_invoice',
+        //'page arguments' => array('upt_survey_form'),
+        'access arguments' => array('access admission cetak'),
+        'menu_name' => 'menu-menu-ub-matriculant',
+         'file' => 'cetak_invoice.inc',
+         'file path' => drupal_get_path('module', 'admission_cetak').'/cetak',
+         //'weight' => 100,
+     );
+     
+     $menu['cetak/formulir-pendaftaran'] = array(
+         'title' => t('Cetak Formulir Pendaftaran'),
+         'description' => t('Cetak formulir pendaftaran'),
+         'page callback' => 'admission_cetak_formulir',
+        //'page arguments' => array('upt_survey_form'),
+        'access arguments' => array('access admission cetak'),
+        'menu_name' => 'menu-menu-ub-matriculant',
+         'file' => 'cetak_formulir.inc',
+         'file path' => drupal_get_path('module', 'admission_cetak').'/cetak',
+        // 'weight' => 101,
+     );
+     
+     $menu['cetak/daftar-nilai'] = array(
+         'title' => t('Cetak Daftar Nilai'),
+         'description' => t('Cetak daftar nilai'),
+         'page callback' => 'admission_cetak_nilai',
+        //'page arguments' => array('upt_survey_form'),
+        'access arguments' => array('access admission cetak'),
+        'menu_name' => 'menu-menu-ub-matriculant',
+         'file' => 'cetak_nilai.inc',
+         'file path' => drupal_get_path('module', 'admission_cetak').'/cetak',
+         //'weight' => 102,
+     );
+     
+     $menu['cetak/jadwal'] = array(
+//        'title' => t('Ubah Nilai'),
+//        'description' => t('Ubah nilai tiap semester'),
+        'page callback' => 'admission_cetak_jadwal',
+        //'page arguments' => array('admission_cetak_jadwal'),
+        'file' => 'cetak_jadwal.inc',
+        'file path' => drupal_get_path('module', 'admission_cetak').'/cetak',
+        'access arguments' => array('access admission cetak'),
+        //'menu_name' => 'menu-menu-ub-matriculant',
+         'type' => MENU_CALLBACK
+    );
+     
+     $menu['cetak/sudah-bayar'] = array(
+//        'title' => t('Ubah Nilai'),
+//        'description' => t('Ubah nilai tiap semester'),
+        'page callback' => 'admission_cetak_paid',
+        //'page arguments' => array('admission_cetak_jadwal'),
+        'file' => 'cetak_paid.inc',
+        'file path' => drupal_get_path('module', 'admission_cetak').'/cetak',
+        'access arguments' => array('access admission cetak sudah-bayar'),
+        //'menu_name' => 'menu-menu-ub-matriculant',
+         'type' => MENU_CALLBACK
+    );
+     
+     $menu['cetak/sudah-daftar'] = array(
+//        'title' => t('Ubah Nilai'),
+//        'description' => t('Ubah nilai tiap semester'),
+        'page callback' => 'admission_cetak_registered',
+        //'page arguments' => array('admission_cetak_jadwal'),
+        'file' => 'cetak_registered.inc',
+        'file path' => drupal_get_path('module', 'admission_cetak').'/cetak',
+        'access arguments' => array('access admission cetak sudah-daftar'),
+        //'menu_name' => 'menu-menu-ub-matriculant',
+         'type' => MENU_CALLBACK
+    );
+     
+     $menu['cetak/kartu-ujian'] = array(
+        'page callback' => 'admission_cetak_kartu',
+        'file' => 'cetak_kartu.inc',
+        'file path' => drupal_get_path('module', 'admission_cetak').'/cetak',
+        'access arguments' => array('access admission cetak'),      
+         'type' => MENU_CALLBACK
+    );
+     
+      $menu['cetak/cover'] = array(
+         'title' => t('Cetak Cover'),
+         'description' => t('Cetak Cover'),
+         'page callback' => 'admission_cetak_cover',
+        //'page arguments' => array('upt_survey_form'),
+        'access arguments' => array('access admission cetak'),
+        //'menu_name' => 'menu-menu-ub-matriculant',
+         'file' => 'cetak_cover.inc',
+         'file path' => drupal_get_path('module', 'admission_cetak').'/cetak',
+         //'weight' => 100,
+     );
+      
+           
+    $menu['export-list-paid'] = array(
+        'page callback' => 'admission_paid_export',
+        //'page arguments' => array('upt_survey_form'),
+        'access arguments' => array('access admission cetak'),        
+        'file' => 'admission_paid_export.inc',
+        'file path' => drupal_get_path('module', 'admission_cetak').'/export',
+        'type' => MENU_CALLBACK,
+    );
+    
+     $menu['export-list-registered'] = array(
+        'page callback' => 'admission_registered_export',
+        //'page arguments' => array('upt_survey_form'),
+        'access arguments' => array('access admission cetak'),        
+        'file' => 'admission_registered_export.inc',
+        'file path' => drupal_get_path('module', 'admission_cetak').'/export',
+        'type' => MENU_CALLBACK,
+    );
+  
+     return $menu;
+}
+
+function admission_cetak(){
+    $output = '';
+    $cetak_formulir_link = l('Cetak Formulir','cetak/formulir-pendaftaran');
+    $daftar_nilai_link = l('Cetak Daftar Nilai','cetak/daftar-nilai');
+    $invoice_link = l('Cetak Invoice','cetak/invoice');
+    
+    $output .= $cetak_formulir_link . '<br/>' . $daftar_nilai_link . '<br/>' . $invoice_link;
+    
+    return $output;
+}

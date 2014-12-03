@@ -1,0 +1,4 @@
+name = Admission Jadwal
+description = Modul yang berkaitan dengan jadwal admission
+core = 7.x
+package = Admission

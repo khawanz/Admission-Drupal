@@ -1,0 +1,72 @@
+<?php
+
+function admission_jadwal_permission(){
+    return array(
+        'access admission jadwal' => array(
+            'title' => 'Akses halaman Jadwal'
+        ),
+        'access admission tambah schedule' => array(
+            'title' => 'Akses halaman Tambah schedule'
+        ),
+        'access admission lihat schedule' => array(
+            'title' => 'Akses halaman Lihat Schedule'
+        ),
+    );
+}
+
+function admission_jadwal_menu(){
+      $menu['jadwal'] = array(
+         'title' => t('Jadwal Tes'),
+        'page callback' => 'views_page',
+        'page arguments' => array('vlist_jadwal_test', 'page'),	
+        'file' => 'views.module',
+        'file path' => drupal_get_path('module', 'views'),
+        'access arguments' => array('access admission jadwal'),
+        'weight' => -5,
+        'menu_name' => 'menu-menu-ub-matriculant',
+     );
+      
+      $menu['schedule'] = array(
+         'title' => t('Schedule'),      
+       'page callback' => 'views_page',
+        'page arguments' => array('schedule_view_2', 'page'),	
+        'file' => 'views.module',
+        'file path' => drupal_get_path('module', 'views'),
+        'access arguments' => array('access admission lihat schedule'),
+        'weight' => -5,
+        'menu_name' => 'main-menu',
+     );
+      
+      $menu['schedule/view'] = array(
+         'title' => t('View'),
+          'access arguments' => array('access admission lihat schedule'),
+          'type' => MENU_DEFAULT_LOCAL_TASK,
+          'weight' => 0,
+     );
+      
+       $menu['schedule/add'] = array(
+          'title' => t('Add'),
+        //'description' => t('Konfirmasi pembayaran'),
+        'page callback' => 'node_add',
+        'page arguments' => array('schedule'),
+        'file' => 'node.pages.inc',
+        'file path' => drupal_get_path('module', 'node'),
+        'access arguments' => array('access admission tambah schedule'),
+         'menu_name' => 'main-menu',
+         'weight' => 1,
+           'type' => MENU_LOCAL_TASK
+     );
+      
+      return $menu;
+}
+
+function admission_jadwal_form_alter(&$form,&$form_state,$form_id){   
+    
+    if($form_id == 'schedule_node_form'){
+        $form['actions']['submit']['#submit'][] = 'jadwal_redirect_submit';
+    }
+}
+
+function jadwal_redirect_submit($form,&$form_state){
+  $form_state['redirect'] = 'schedule';
+}
