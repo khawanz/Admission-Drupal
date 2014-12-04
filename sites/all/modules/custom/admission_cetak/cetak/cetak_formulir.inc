@@ -3,7 +3,7 @@
 function admission_cetak_formulir(){
     global $base_path;
     global $user;
-
+ 
     $user_id = $user->uid;
     $reg_array = array();
     if(!in_array('matriculants', $user->roles)){

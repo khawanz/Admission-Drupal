@@ -3,7 +3,6 @@ function admission_cetak_kartu(){
     //global $user;
     global $base_path;  
        
-    
     $reg_nid = (int)abs(arg(2));
     $reg_node = node_load($reg_nid);
     $user_id = $reg_node->field_reg_candidate['und'][0]['target_id'];

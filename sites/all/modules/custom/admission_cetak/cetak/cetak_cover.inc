@@ -20,7 +20,7 @@ function admission_cetak_cover(){
    if(!isset($reg_node)){
        return '<strong>Belum Terdaftar.</strong>';
    }
-    
+     
    $profile = profile2_load_by_user($user_id);
     $nama = $profile['data_pribadi']->field_personal_fullname['und'][0]['value'];
 //    $lahir1 = $profile['data_pribadi']->field_personal_birthdate['und'][0]['value'];

@@ -9,7 +9,7 @@ function admission_cetak_invoice(){
         $user_id = arg(2);
     }
     //$current_user = user_load($user_id);
-    
+     
    $query = new EntityFieldQuery();
    $query->entityCondition('entity_type', 'node')
            ->entityCondition('bundle', 'registration')
