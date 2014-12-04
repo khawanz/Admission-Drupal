@@ -1,25 +1,23 @@
 <?php
 
 function admission_cetak_cover(){
-   global $base_path;
+    global $base_path;
     global $user;
     $username = $user->name;
 
-    $user_id = $user->uid;
-    if(!in_array('matriculants', $user->roles)){
-        $user_id = arg(2);
-    }
-    //$current_user = user_load($user_id);
+    $reg_nid = (int)abs(arg(2));
+    $reg_node = node_load($reg_nid);
+    $user_id = $reg_node->field_reg_candidate['und'][0]['target_id'];
     
-   $query = new EntityFieldQuery();
-   $query->entityCondition('entity_type', 'node')
-           ->entityCondition('bundle', 'registration')
-           ->propertyCondition('status', 1)         
-           ->fieldCondition('field_reg_candidate', 'target_id', $user_id , '=');
-   $result = $query->execute();
+//   $query = new EntityFieldQuery();
+//   $query->entityCondition('entity_type', 'node')
+//           ->entityCondition('bundle', 'registration')
+//           ->propertyCondition('status', 1)         
+//           ->fieldCondition('field_reg_candidate', 'target_id', $user_id , '=');
+//   $result = $query->execute();
    
    //validation
-   if(empty($result)){
+   if(!isset($reg_node)){
        return '<strong>Belum Terdaftar.</strong>';
    }
     
@@ -27,8 +25,7 @@ function admission_cetak_cover(){
     $nama = $profile['data_pribadi']->field_personal_fullname['und'][0]['value'];
 //    $lahir1 = $profile['data_pribadi']->field_personal_birthdate['und'][0]['value'];
 //    $lahir = date('d M Y', strtotime($lahir1));
-   
-    $reg_node = node_load(key($result['node']));
+      
     $noreg = $reg_node->field_reg_no['und'][0]['value'];
     $nomor_file = isset($reg_node->field_reg_fileno['und'][0]['value'])?
             $reg_node->field_reg_fileno['und'][0]['value']:'-';

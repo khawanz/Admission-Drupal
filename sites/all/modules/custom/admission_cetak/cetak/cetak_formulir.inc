@@ -5,20 +5,27 @@ function admission_cetak_formulir(){
     global $user;
 
     $user_id = $user->uid;
+    $reg_array = array();
     if(!in_array('matriculants', $user->roles)){
-        $user_id = arg(2);
+        $reg_nid = (int)abs(arg(2));
+        $reg_node = node_load($reg_nid);
+        $user_id = $reg_node->field_reg_candidate['und'][0]['target_id'];
+        $reg_array[] = $reg_nid;
+    }
+    else{
+        $query = new EntityFieldQuery();
+        $query->entityCondition('entity_type', 'node')
+                ->entityCondition('bundle', 'registration')
+                ->propertyCondition('status', 1)         
+                ->fieldCondition('field_reg_candidate', 'target_id', $user_id , '=');
+        $result = $query->execute();
+        $reg_array = array_keys($result['node']);
     }
     $current_user = user_load($user_id);
     
-   $query = new EntityFieldQuery();
-   $query->entityCondition('entity_type', 'node')
-           ->entityCondition('bundle', 'registration')
-           ->propertyCondition('status', 1)         
-           ->fieldCondition('field_reg_candidate', 'target_id', $user_id , '=');
-   $result = $query->execute();
-   
+    
    //validation
-   if(empty($result)){
+   if(empty($reg_array)){
        drupal_set_message('Silakan lakukan pendaftaran dengan mengikuti ujian masuk atau seleksi melalui jalur khusus (rapor/UN).');
        return '';
    }
@@ -71,7 +78,7 @@ function admission_cetak_formulir(){
    $telp_rumah = $profile['data_orangtua']->field_orangtua_telprumah['und'][0]['value'];
    $hp_orangtua = $profile['data_orangtua']->field_orangtua_hp['und'][0]['value'];
    $email_orangtua = isset($profile['data_orangtua']->field_orangtua_email['und'][0]['value'])?
-           $profile['data_orangtua']->field_orangtua_email['und'][0]['value']:0;
+           $profile['data_orangtua']->field_orangtua_email['und'][0]['value']:'-';
    $alamat_orangtua = $profile['data_orangtua']->field_orangtua_alamat['und'][0]['value'];
    $kota_orangtua_node = node_load($profile['data_orangtua']->field_orangtua_kota['und'][0]['target_id']);
    $kota_orangtua = $kota_orangtua_node->title;
@@ -89,7 +96,7 @@ function admission_cetak_formulir(){
    $kota_sma = $kota_sma_node->title;
    $kodepos_sma = $profile['data_sekolah']->field_sekolah_kodepos['und'][0]['value'];
     
-   foreach(element_children($result['node']) as $reg_nid){
+   foreach($reg_array as $reg_nid){
        $reg_node = node_load($reg_nid);
        $noreg = $reg_node->field_reg_no['und'][0]['value'];
        $nomor_file = isset($reg_node->field_reg_fileno['und'][0]['value'])?
@@ -303,24 +310,24 @@ function admission_cetak_formulir(){
                   <td width='117' style='border-style: none; border-width: medium' align='right' height='12'>
                   <p style='margin-right:10; margin-top:1; margin-bottom:1'><font face='Verdana' size='1'>HP:</font></p></td>
                         <td width='345' style='border-style: none; border-width: medium' height='12'>
-                        <font size='1' color='#000080' face='Verdana'>$hp</font></td>
+                        <font size='1' color='#000080' face='Verdana'>$hp_orangtua</font></td>
                       </tr>
                       <tr>
                   <td width='124' style='border-style: none; border-width: medium' align='right' height='12'>
                   <p style='margin-right:10; margin-top:1; margin-bottom:1'><font face='Verdana' size='1'>HP:</font></p></td>
                         <td width='345' style='border-style: none; border-width: medium' height='12'>
-                        <font size='1' face='Verdana' color='#000080'>$hp_orangtua</font><font size='1'>
+                        <font size='1' face='Verdana' color='#000080'>$hp</font><font size='1'>
                         </font><font size='1'>&nbsp;</font></td>
                   <td width='117' style='border-style: none; border-width: medium' align='right' height='12'>
                   <p style='margin-right:10; margin-top:1; margin-bottom:1'><font face='Verdana' size='1'>Email:</font></p></td>
                         <td width='345' style='border-style: none; border-width: medium' height='12'>
-                        <font size='1' color='#000080' face='Verdana'>$email                                                                           &nbsp;</font></td>
+                        <font size='1' color='#000080' face='Verdana'>$email_orangtua                                                                           &nbsp;</font></td>
                       </tr>
                       <tr>
                   <td width='124' style='border-style: none; border-width: medium' align='right' height='12'>
                   <p style='margin-right:10; margin-top:1; margin-bottom:1'><font face='Verdana' size='1'>Email:</font></p></td>
                         <td width='345' style='border-style: none; border-width: medium' height='12'>
-                        <font size='1' face='Verdana' color='#000080'>$email_orangtua </font><font size='1'>
+                        <font size='1' face='Verdana' color='#000080'>$email </font><font size='1'>
                         </font><font size='1'>&nbsp;</font></td>
                   <td width='117' style='border-style: none; border-width: medium' align='right' height='12' valign='top'>
                   <p align='left'>

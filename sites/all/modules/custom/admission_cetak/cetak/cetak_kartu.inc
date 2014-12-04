@@ -1,25 +1,31 @@
 <?php
 function admission_cetak_kartu(){
-    global $user;
-    global $base_path;
-    global $base_url;
+    //global $user;
+    global $base_path;  
        
-    $user_id = $user->uid;
-    if(!in_array('matriculants', $user->roles)){
-        $user_id = arg(2);
-    }
+    
+    $reg_nid = (int)abs(arg(2));
+    $reg_node = node_load($reg_nid);
+    $user_id = $reg_node->field_reg_candidate['und'][0]['target_id'];
+    $biaya = strtolower($reg_node->field_reg_fee['und'][0]['value']);
+    
     //$current_user = user_load($user_id);
     
-   $query = new EntityFieldQuery();
-   $query->entityCondition('entity_type', 'node')
-           ->entityCondition('bundle', 'registration')
-           ->propertyCondition('status', 1)         
-           ->fieldCondition('field_reg_candidate', 'target_id', $user_id , '=');
-   $result = $query->execute();
+//   $query = new EntityFieldQuery();
+//   $query->entityCondition('entity_type', 'node')
+//           ->entityCondition('bundle', 'registration')
+//           ->propertyCondition('status', 1)         
+//           ->fieldCondition('field_reg_candidate', 'target_id', $user_id , '=');
+//   $result = $query->execute();
    
    //validation
-   if(empty($result)){
+   if(empty($reg_node)){
        return 'PAGE NOT FOUND';
+   }
+   
+   //jika registrasi belum dibayar atau tidak gratis maka tampil pesan error
+   if($biaya != 'paid' AND $biaya != 'free'){
+       return 'Registrasi ini belum dibayar.';
    }
    
     $profile = profile2_load_by_user($user_id);
@@ -35,7 +41,7 @@ function admission_cetak_kartu(){
    $sekolah =  $profile['data_sekolah']->field_sekolah_tipe['und'][0]['value'];
    $nama_sekolah = $profile['data_sekolah']->field_sekolah_sma['und'][0]['value'];
    
-   $reg_node = node_load(key($result['node']));
+   //$reg_node = node_load(key($result['node']));
    $noreg = $reg_node->field_reg_no['und'][0]['value'];
    
    $sched_node = node_load($reg_node->field_reg_schedule['und'][0]['target_id']); 
@@ -233,7 +239,7 @@ function admission_cetak_kartu(){
 			</tr>
 		</tbody></table>";
        
-    print $output;
+    return $output;
 }
 
 function cetak_formulir_get_style(){
